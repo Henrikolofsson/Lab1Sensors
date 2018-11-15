@@ -1,6 +1,7 @@
 package se.mau.ai0026.lab1sensors;
 
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import Fragments.DataFragment;
 import Fragments.StartFragment;
@@ -13,6 +14,7 @@ public class Controller {
     public Controller(MainActivity activity){
         this.mainActivity = activity;
         initializeFragments();
+        setFragment("StartFragment");
     }
 
     private void initializeFragments(){
@@ -54,13 +56,25 @@ public class Controller {
 
     private void setFragment(String tag){
         switch(tag){
-
+            case "StartFragment":
+                setFragment(startFragment, tag);
+                break;
         }
     }
 
     private void setFragment(Fragment fragment, String tag){
         mainActivity.setFragment(fragment, tag);
         dataFragment.setActiveFragment(tag);
+    }
+
+    public void displayValues(long timestamp, int accuracy, float[] values){
+        if(dataFragment.getActiveFragment().equals("StartFragment")){
+            startFragment.setTexts(timestamp,accuracy,values);
+        }
+    }
+
+    public void unregister(){
+        mainActivity.unregister();
     }
 
 

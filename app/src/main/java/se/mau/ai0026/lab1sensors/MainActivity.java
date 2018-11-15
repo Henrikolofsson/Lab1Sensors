@@ -9,29 +9,30 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private SensorManager mSensorManager;
-    private List<Sensor> sensorList;
+    private Sensor sensor;
     private SensorListener sensorListener;
     private Controller controller;
     private FragmentManager fm;
-    private List<String> sensorNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        controller = new Controller(this);
         initializeComponents();
+        controller = new Controller(this);
+        sensorListener.setController(controller);
 
         mSensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
-        sensorList = mSensorManager.getSensorList(Sensor.TYPE_ALL);
-        setSensorNameList(sensorList);
-
+        if(mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)!=null){
+            sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        }
     }
 
     private void initializeComponents(){
@@ -62,35 +63,30 @@ public class MainActivity extends AppCompatActivity {
         return fm.findFragmentByTag(tag);
     }
 
-    private void setSensorNameList(List<Sensor> sensorList){
-        sensorNames = new ArrayList<>();
-        for(int i = 0; i < sensorList.size(); i++){
-            sensorNames.add(sensorList.get(i).getName());
-        }
-    }
-
-    public List<String> getAvailableSensorNames(){
-        return sensorNames;
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
-        mSensorManager.registerListener(sensorListener, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(sensorListener, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+        Toast.makeText(this, "Registered listener for accelerometer", Toast.LENGTH_LONG).show();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(sensorListener);
+        Toast.makeText(this, "Un-registered listener for accelerometer", Toast.LENGTH_LONG).show();
+        unregister();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mSensorManager = null;
-        mSensor = null;
+        sensor = null;
     }
 
-
+    public void unregister(){
+        mSensorManager.unregisterListener(sensorListener);
+        Toast.makeText(this, "Un-registered listener for accelerometer", Toast.LENGTH_LONG).show();
+    }
 }

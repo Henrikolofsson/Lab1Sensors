@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 public class SensorListener extends Service implements SensorEventListener {
+    private Controller controller;
 
     @Nullable
     @Override
@@ -19,12 +20,18 @@ public class SensorListener extends Service implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-
+        long timestamp = event.timestamp;
+        int accuracy = event.accuracy;
+        float[] values = event.values;
+        controller.displayValues(timestamp, accuracy, values);
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
 
+    public void setController(Controller controller){
+        this.controller = controller;
     }
 }
